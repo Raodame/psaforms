@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Event Date Check</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 100px;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+    }
+    #message {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Before filling out the form…</h2>
+  <p>When is your planned event?</p>
+  <input type="date" id="eventDate">
+  <br><br>
+  <button onclick="checkDate()">Continue</button>
+  <p id="message"></p>
+
+  <script>
+    function checkDate() {
+      const input = document.getElementById("eventDate").value;
+      const message = document.getElementById("message");
+
+      if (!input) {
+        message.textContent = "Please select a date.";
+        return;
+      }
+
+      const eventDate = new Date(input);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const minDate = new Date(today);
+      minDate.setDate(minDate.getDate() + 14);
+
+      if (eventDate >= minDate) {
+        window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLScB5dkcSBgLITpNkU9Ow_11JboSaFII56-Ie2QEC9Z5cDpqOA/viewform?usp=dialog";
+      } else {
+        message.textContent = "❌ Your event must be at least 14 days from today.";
+      }
+    }
+  </script>
+</body>
+</html>
