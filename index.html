@@ -35,13 +35,13 @@
   </select>
 
   <div id="confirmSection">
-    <p>Have you already communicated with me before filling out this form?</p>
+    <p>Have you already communicated with Ash about filling out this form?</p>
     <button onclick="confirmContact(true)">Yes</button>
     <button onclick="confirmContact(false)">No</button>
   </div>
 
   <div id="dateSection">
-    <p>Select your planned date:</p>
+    <p>When is your planned event date?</p>
     <input type="date" id="selectedDate">
     <br>
     <button onclick="validateAndRedirect()">Continue</button>
@@ -92,7 +92,7 @@
       if (confirmed) {
         window.location.href = formRules.purchase.url;
       } else {
-        message.textContent = "❌ Please contact me before submitting the purchase request form.";
+        message.textContent = "❌ Please contact me before filling out a purchase request form.";
       }
     }
 
