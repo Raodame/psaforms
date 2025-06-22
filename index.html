@@ -2,51 +2,119 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Event Date Check</title>
+  <title>Form Selector</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      margin-top: 100px;
+      margin-top: 60px;
     }
-    input, button {
-      padding: 10px;
+    select, input, button {
       font-size: 16px;
+      padding: 10px;
+      margin: 10px;
     }
     #message {
       color: red;
-      margin-top: 10px;
+      margin-top: 20px;
+    }
+    #dateSection, #confirmSection {
+      display: none;
     }
   </style>
 </head>
 <body>
-  <h2>Before filling out the form…</h2>
-  <p>When is your planned event?</p>
-  <input type="date" id="eventDate">
-  <br><br>
-  <button onclick="checkDate()">Continue</button>
+  <h2>Which form would you like to submit?</h2>
+
+  <select id="formType">
+    <option value="">-- Select a form --</option>
+    <option value="purchase">Purchase Request</option>
+    <option value="event">Event Request</option>
+    <option value="space">AACC Space Request</option>
+    <option value="reimbursement">Reimbursement Form</option>
+  </select>
+
+  <div id="confirmSection">
+    <p>Have you already communicated with me before filling out this form?</p>
+    <button onclick="confirmContact(true)">Yes</button>
+    <button onclick="confirmContact(false)">No</button>
+  </div>
+
+  <div id="dateSection">
+    <p>Select your planned date:</p>
+    <input type="date" id="selectedDate">
+    <br>
+    <button onclick="validateAndRedirect()">Continue</button>
+  </div>
+
   <p id="message"></p>
 
   <script>
-    function checkDate() {
-      const input = document.getElementById("eventDate").value;
-      const message = document.getElementById("message");
+    const formRules = {
+      purchase: {
+        url: "https://forms.gle/zrMzbtzcCbbRd6WG8"
+      },
+      event: {
+        minDays: 21,
+        url: "https://forms.gle/bLYtaCEamqi7aJABA"
+      },
+      space: {
+        minDays: 7,
+        url: "https://forms.gle/7572reNx4zDUYoMc9"
+      },
+      reimbursement: {
+        url: "https://forms.gle/W53Ctkgt1oY65oRYA"
+      }
+    };
 
-      if (!input) {
+    const formSelect = document.getElementById("formType");
+    const dateSection = document.getElementById("dateSection");
+    const confirmSection = document.getElementById("confirmSection");
+    const message = document.getElementById("message");
+
+    formSelect.addEventListener("change", () => {
+      message.textContent = "";
+      dateSection.style.display = "none";
+      confirmSection.style.display = "none";
+
+      const formType = formSelect.value;
+
+      if (formType === "purchase") {
+        confirmSection.style.display = "block";
+      } else if (formType === "event" || formType === "space") {
+        dateSection.style.display = "block";
+      } else if (formType === "reimbursement") {
+        window.location.href = formRules.reimbursement.url;
+      }
+    });
+
+    function confirmContact(confirmed) {
+      if (confirmed) {
+        window.location.href = formRules.purchase.url;
+      } else {
+        message.textContent = "❌ Please contact me before submitting the purchase request form.";
+      }
+    }
+
+    function validateAndRedirect() {
+      const formType = formSelect.value;
+      const dateInput = document.getElementById("selectedDate").value;
+
+      if (!dateInput) {
         message.textContent = "Please select a date.";
         return;
       }
 
-      const eventDate = new Date(input);
+      const selectedDate = new Date(dateInput);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      const minDate = new Date(today);
-      minDate.setDate(minDate.getDate() + 14);
+      const minValidDate = new Date(today);
+      minValidDate.setDate(today.getDate() + formRules[formType].minDays);
 
-      if (eventDate >= minDate) {
-        window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLScB5dkcSBgLITpNkU9Ow_11JboSaFII56-Ie2QEC9Z5cDpqOA/viewform?usp=dialog";
+      if (selectedDate >= minValidDate) {
+        window.location.href = formRules[formType].url;
       } else {
-        message.textContent = "❌ Your event must be at least 14 days from today.";
+        message.textContent = `❌ This form requires at least ${formRules[formType].minDays} days' notice.`;
       }
     }
   </script>
